@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOCAL TRAILS | Explore Local</title>
+<style>
+:root{--dark:#102a2a;--green:#1e6557;--lime:#d8ed9b;--cream:#f6f3eb;--paper:#fffdf8;--muted:#64736d;--line:#e6e1d6}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--cream);color:var(--dark)}
+button,input,select{font:inherit}button{cursor:pointer}
+header{background:var(--dark);color:white;padding:18px 6%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+.brand{font-size:23px;font-weight:900}.brand span{color:var(--lime)}
+nav{display:flex;gap:20px}nav a{color:white;text-decoration:none;font-size:13px}
+.hero{background:linear-gradient(120deg,#102a2a,#286453);color:white;padding:75px 8%}
+.eyebrow{font-size:11px;font-weight:bold;letter-spacing:2px;color:var(--green)}
+.hero .eyebrow{color:var(--lime)}
+.hero h1{font-size:clamp(43px,7vw,76px);line-height:1;margin:20px 0}
+.hero p{max-width:650px;line-height:1.8;color:#d8e5de}
+.btn{border:0;border-radius:30px;padding:13px 21px;font-weight:bold}
+.primary{background:var(--lime);color:var(--dark)}
+main{max-width:1250px;margin:auto;padding:40px 22px 70px}
+h2{font-size:29px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px}
+.location{padding:24px;margin-bottom:38px}
+.location-row{display:flex;gap:10px;margin-top:17px}
+.location-row input{flex:1;min-width:0;padding:15px;border:1px solid var(--line);border-radius:10px}
+.location-row button{background:var(--green);color:white;border:0;border-radius:10px;padding:12px 20px;font-weight:bold}
+#status{font-size:13px;color:var(--muted);margin-top:14px}
+.layout{display:grid;grid-template-columns:1.7fr .85fr;gap:20px;align-items:start}
+.filters{display:flex;gap:12px;padding:17px;margin-bottom:16px}
+.field{display:flex;flex-direction:column;gap:7px;flex:1}
+.field label{font-size:10px;font-weight:bold;color:var(--muted)}
+.field input,.field select{width:100%;padding:12px;border:1px solid var(--line);border-radius:9px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:17px}
+.chip{border:1px solid var(--line);background:white;border-radius:30px;padding:10px 15px}
+.chip.active{background:var(--dark);color:white}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.place{overflow:hidden;display:flex;flex-direction:column}
+.place-top{height:110px;padding:14px;display:flex;align-items:end;justify-content:space-between;background:linear-gradient(130deg,#dce9d9,#b6cdbb)}
+.temple{background:linear-gradient(130deg,#f4d9b4,#d69a69)}
+.history{background:linear-gradient(130deg,#d9d4c6,#a69b82)}
+.nature{background:linear-gradient(130deg,#dcebd1,#a3c89b)}
+.market{background:linear-gradient(130deg,#f2d6c5,#d78f6b)}
+.place-emoji{font-size:38px}
+.tag{background:white;padding:6px 10px;border-radius:20px;font-size:10px;font-weight:bold}
+.place-body{padding:15px;display:flex;flex-direction:column;flex:1}
+.place h3{margin:0 0 8px;font-size:16px}
+.place p{font-size:12px;color:var(--muted);line-height:1.7}
+.meta{font-size:11px;color:var(--muted);margin-top:auto;line-height:1.7}
+.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.small{flex:1;min-width:65px;padding:9px 5px;background:white;border:1px solid var(--line);border-radius:8px;font-size:11px;font-weight:bold}
+.sidebar{padding:20px;position:sticky;top:85px}
+.side-title{display:flex;justify-content:space-between;align-items:center}
+.count{background:#e9f0dc;padding:6px 10px;border-radius:20px;font-size:11px}
+.empty{text-align:center;padding:25px 10px;color:var(--muted);font-size:13px;line-height:1.7}
+.itinerary-list{padding-left:20px}
+.itinerary-list li{padding:11px 0;border-bottom:1px solid var(--line);font-size:12px;line-height:1.8}
+.remove{border:0;background:#f7e9e3;padding:5px 8px;border-radius:6px}
+.summary{background:#f1f4e9;padding:14px;border-radius:11px;margin:14px 0;font-size:12px;line-height:1.8}
+.side-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.side-actions button{padding:11px 5px;border:1px solid var(--line);border-radius:9px;background:white;font-size:11px;font-weight:bold}
+.route{background:var(--dark)!important;color:white}
+.share{width:100%;padding:12px;margin-top:10px;background:var(--lime);border:0;border-radius:9px;font-weight:bold}
+.section{padding:23px;margin-top:25px}
+.section p{font-size:13px;color:var(--muted);line-height:1.7}
+.planner-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:11px;align-items:end}
+.planner-grid button{background:#df8956;color:white;border:0;padding:13px;border-radius:9px;font-weight:bold}
+.result{display:none;background:#f1f4e9;padding:16px;border-radius:12px;margin-top:15px;font-size:13px;line-height:1.9}
+.assistant{margin-top:25px;padding:26px;border-radius:18px;background:var(--dark);color:white}
+.assistant p{font-size:13px;color:#ccd9d2;line-height:1.8}
+.assistant-row{display:flex;gap:10px;margin-top:17px}
+.assistant-row input{flex:1;min-width:0;padding:14px;border-radius:9px;border:0}
+.assistant-row button{background:var(--lime);border:0;border-radius:9px;padding:12px 20px;font-weight:bold}
+.suggestions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.suggestions button{background:#ffffff18;border:1px solid #ffffff35;color:white;padding:9px 13px;border-radius:30px;font-size:11px}
+.assistant-result{display:none;background:#ffffff12;padding:16px;border-radius:12px;margin-top:15px;font-size:13px;line-height:1.8}
+.gems-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.modal{display:none;position:fixed;inset:0;background:#0009;z-index:20;justify-content:center;align-items:center;padding:18px}
+.modal-content{background:white;padding:25px;border-radius:18px;width:100%;max-width:550px;max-height:85vh;overflow:auto}
+.modal-content p{font-size:14px;color:var(--muted);line-height:1.8}
+.story-box{background:#f1f4e9;padding:14px;border-radius:12px;font-size:12px;line-height:1.8}
+footer{background:var(--dark);color:white;padding:30px 6%;font-size:12px;line-height:1.8}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--dark);color:white;padding:12px 20px;border-radius:30px;display:none;z-index:30;font-size:12px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{position:static;grid-row:1}.planner-grid{grid-template-columns:1fr 1fr}.gems-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:550px){.grid,.gems-grid{grid-template-columns:1fr}.filters,.location-row,.assistant-row{flex-direction:column}.planner-grid{grid-template-columns:1fr}nav{gap:9px}nav a{font-size:10px}.hero{padding:50px 6%}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="brand">LOCAL<span> TRAILS.</span></div>
+<nav>
+<a href="#discover">Discover</a>
+<a href="#planner">Plan</a>
+<a href="#gems">Hidden Gems</a>
+</nav>
+</header>
+
+<section class="hero">
+<div class="eyebrow">SMART LOCAL TOURISM DISCOVERY PLATFORM</div>
+<h1>Discover More.<br>Explore Local.</h1>
+<p>Every city has stories waiting to be discovered. Find attractions, explore lesser-known places, learn about regional heritage and build a journey based on your interests.</p>
+<button class="btn primary" onclick="goTo('location')">Explore destinations ↓</button>
+<button class="btn" onclick="goTo('planner')">Plan my journey</button>
+</section>
+
+<main>
+<section class="panel location" id="location">
+<div class="eyebrow">START YOUR JOURNEY</div>
+<h2>Where do you want to explore?</h2>
+<p>Search any city, town or destination to discover attractions.</p>
+<div class="location-row">
+<input id="cityInput" placeholder="Example: Ambala, Chandigarh, Delhi, Jaipur">
+<button id="searchCityBtn" onclick="changeLocation()">Explore location →</button>
+</div>
+<div id="status">Ready to explore.</div>
+</section>
+
+<div id="discover" class="section-heading">
+<div class="eyebrow">DESTINATION DISCOVERY</div>
+<h2>Explore local destinations</h2>
+<p>Discover attractions in your selected location.</p>
+</div>
+
+<div class="layout">
+<section>
+<div class="panel filters">
+<div class="field" style="flex:2">
+<label>SEARCH DESTINATIONS</label>
+<input id="search" placeholder="Search attractions..." oninput="renderPlaces()">
+</div>
+<div class="field">
+<label>VISIT DURATION</label>
+<select id="duration" onchange="renderPlaces()">
+<option value="0">Any duration</option>
+<option value="60">Under 1 hour</option>
+<option value="120">Under 2 hours</option>
+</select>
+</div>
+</div>
+
+<div class="chips">
+<button class="chip active" data-cat="All">All places</button>
+<button class="chip" data-cat="Heritage">Heritage</button>
+<button class="chip" data-cat="Spiritual">Spiritual</button>
+<button class="chip" data-cat="Nature">Nature</button>
+<button class="chip" data-cat="Shopping">Shopping</button>
+</div>
+<div class="grid" id="places"></div>
+</section>
+
+<aside class="panel sidebar">
+<div class="side-title"><h3>My Journey</h3><span class="count" id="count">0 stops</span></div>
+<div id="itinerary"><div class="empty">Your journey starts here. Add destinations to build your itinerary.</div></div>
+<div class="summary" id="summary" style="display:none"></div>
+<div class="side-actions">
+<button onclick="clearRoute()">Clear journey</button>
+<button class="route" onclick="openRoute()">Open route ↗</button>
+</div>
+<button class="share" onclick="shareJourney()">↗ Share My Journey</button>
+<p style="font-size:10px;color:#64736d">Your itinerary is saved on this device.</p>
+</aside>
+</div>
+
+<section class="panel section" id="planner">
+<div class="eyebrow">PERSONALISED TRAVEL</div>
+<h2>Smart Itinerary Planner ✦</h2>
+<p>Choose your time, interests and travel pace to generate a suggested itinerary.</p>
+<div class="planner-grid">
+<div class="field"><label>AVAILABLE TIME</label>
+<select id="hours"><option value="2">2 hours</option><option value="3" selected>3 hours</option><option value="4">4 hours</option><option value="6">6 hours</option><option value="8">Full day</option></select></div>
+<div class="field"><label>INTEREST</label>
+<select id="interest"><option value="All">Everything</option><option value="Heritage">Heritage</option><option value="Spiritual">Spiritual</option><option value="Nature">Nature</option><option value="Shopping">Shopping</option></select></div>
+<div class="field"><label>TRAVEL PACE</label>
+<select id="pace"><option value="relaxed">Relaxed</option><option value="packed">Explore more</option></select></div>
+<button onclick="generatePlan()">Generate plan</button>
+</div>
+<div class="result" id="planResult"></div>
+</section>
+
+<section class="assistant">
+<div class="eyebrow">YOUR PERSONAL LOCAL GUIDE</div>
+<h2>Ask Local Trails ✦</h2>
+<p>Tell us your interests or available time. Get recommendations from the loaded destination list.</p>
+<div class="assistant-row">
+<input id="question" placeholder="Example: Find historical places for 2 hours" onkeydown="if(event.key==='Enter')askAssistant()">
+<button onclick="askAssistant()">Ask →</button>
+</div>
+<div class="suggestions">
+<button onclick="askPreset('Suggest spiritual places')">Spiritual</button>
+<button onclick="askPreset('Suggest historical places')">Heritage</button>
+<button onclick="askPreset('Suggest nature places')">Nature</button>
+<button onclick="askPreset('Suggest shopping places')">Shopping</button>
+<button onclick="askPreset('Show hidden gems')">Hidden gems</button>
+<button onclick="askPreset('Suggest places for 2 hours')">2-hour trip</button>
+</div>
+<div class="assistant-result" id="assistantResult"></div>
+</section>
+
+<section class="panel section" id="gems">
+<div class="eyebrow">BEYOND THE USUAL</div>
+<h2>Hidden Gems & Local Discoveries 💎</h2>
+<p>Explore lesser-known local destinations. These are discovery suggestions, not verified rankings.</p>
+<div class="gems-grid" id="gemPlaces"></div>
+</section>
+</main>
+
+<div class="modal" id="storyModal" onclick="if(event.target.id==='storyModal')closeStory()">
+<div class="modal-content">
+<button onclick="closeStory()" style="float:right">Close ×</button>
+<div class="eyebrow">DESTINATION INFORMATION</div>
+<h2 id="storyTitle"></h2>
+<p id="storyDescription"></p>
+<div class="story-box" id="storyFacts"></div><br>
+<button class="btn primary" onclick="addStoryPlace()">Add to journey</button>
+<button class="btn" onclick="storyDirections()">Get directions ↗</button>
+</div>
+</div>
+
+<footer>
+<b>LOCAL TRAILS.</b><br>Discover More. Explore Local.<br><br>
+A location-aware platform for local tourism discovery and personalised itinerary planning.<br>
+Map data © OpenStreetMap contributors. Confirm opening hours and visitor access before travelling.
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* CURATED DEMO DESTINATIONS */
+const database={
+ambala:[
+["Ambika Mata Temple","Spiritual","Ambala City",35,"🛕","temple","A local shrine dedicated to Goddess Amba.","Ambika Mata Temple is associated with the religious heritage of Ambala.","Ambika Mata Temple, Ambala"],
+["Badshahi Bagh Gurudwara","Heritage","Ambala",40,"🙏","history","A historic Sikh destination associated with Guru Gobind Singh Ji.","Badshahi Bagh connects visitors with the Sikh heritage of Ambala.","Badshahi Bagh Gurudwara, Ambala"],
+["Gurudwara Manji Sahib","Spiritual","Ambala City",45,"🙏","history","An important Sikh shrine associated with Guru Hargobind Ji.","Manji Sahib is part of Ambala's religious heritage.","Gurudwara Manji Sahib, Ambala"],
+["Panjokhra Sahib","Spiritual","Ambala district",55,"🙏","temple","A revered Gurdwara associated with Guru Harkrishan Sahib Ji.","Panjokhra Sahib is associated with the visit of the eighth Sikh Guru.","Gurudwara Panjokhra Sahib, Haryana"],
+["Gurudwara Sis Ganj","Heritage","Ambala City",30,"🏛️","history","A historic Sikh shrine in Ambala.","This destination forms part of Ambala's religious landscape.","Gurudwara Sis Ganj, Ambala"],
+["Lakhnaur Sahib","Heritage","Ambala district",60,"🌳","nature","A village associated with the maternal family of Guru Gobind Singh Ji.","Lakhnaur Sahib is connected with Sikh heritage.","Gurudwara Lakhnaur Sahib, Ambala"],
+["Ambala Cloth Market","Shopping","Ambala City",60,"🧵","market","A local commercial destination for textiles and dress materials.","The market represents Ambala's shopping culture.","Cloth Market, Ambala"],
+["European Cemetery","Heritage","Ambala",30,"🏛️","history","A historic cemetery associated with colonial-era Ambala.","This site is connected with the colonial-era history of Ambala.","European Cemetery, Ambala"]
+],
+chandigarh:[
+["Rock Garden","Nature","Sector 1",75,"🪨","nature","A sculpture garden created using recycled and discarded materials.","Created by Nek Chand, the Rock Garden features sculptures and interconnected courtyards.","Rock Garden, Chandigarh"],
+["Sukhna Lake","Nature","Sector 1",60,"🌊","nature","A popular lakefront destination for walking and boating.","Sukhna Lake is a major recreational landmark at the foothills of the Shivalik range.","Sukhna Lake, Chandigarh"],
+["Capitol Complex","Heritage","Sector 1",60,"🏛️","history","A major architectural landmark and UNESCO World Heritage site.","The Capitol Complex forms part of Le Corbusier's modernist urban plan. Access may require permission.","Capitol Complex, Chandigarh"],
+["Government Museum and Art Gallery","Heritage","Sector 10",60,"🖼️","history","Museum with collections covering art, sculpture and regional history.","An important cultural institution with art and archaeological collections.","Government Museum Chandigarh"],
+["Zakir Hussain Rose Garden","Nature","Sector 16",45,"🌹","nature","A large garden known for its rose varieties and landscaped paths.","A popular green space and seasonal floral attraction.","Rose Garden Chandigarh"],
+["Japanese Garden","Nature","Sector 31",40,"🎋","nature","A landscaped public garden with Japanese-inspired features.","A recreational green space in Chandigarh.","Japanese Garden Chandigarh"],
+["Sector 17 Plaza","Shopping","Sector 17",60,"🛍️","market","A central shopping and public plaza.","One of Chandigarh's best-known commercial and civic centres.","Sector 17 Plaza Chandigarh"],
+["Mansa Devi Temple","Spiritual","Panchkula",60,"🙏","temple","A major regional Hindu pilgrimage destination near Chandigarh.","The temple is located in Panchkula, close to Chandigarh.","Mata Mansa Devi Temple Panchkula"]
+],
+delhi:[
+["India Gate","Heritage","New Delhi",45,"🏛️","history","War memorial and major public landmark.","India Gate is a prominent national memorial in New Delhi.","India Gate Delhi"],
+["Qutub Minar","Heritage","Mehrauli",75,"🏛️","history","Historic minaret and UNESCO World Heritage site.","Qutub Minar is a major example of Indo-Islamic architecture.","Qutub Minar Delhi"],
+["Red Fort","Heritage","Old Delhi",90,"🏰","history","Historic Mughal fort and UNESCO World Heritage site.","The Red Fort was built by Mughal emperor Shah Jahan.","Red Fort Delhi"],
+["Lotus Temple","Spiritual","Kalkaji",45,"🪷","temple","A distinctive Baháʼí House of Worship.","The temple is known for its lotus-inspired architecture.","Lotus Temple Delhi"],
+["Humayun's Tomb","Heritage","Nizamuddin",60,"🏛️","history","A Mughal garden tomb and UNESCO World Heritage site.","Humayun's Tomb influenced later Mughal architecture.","Humayun Tomb Delhi"],
+["Lodhi Garden","Nature","Lodhi Road",45,"🌳","nature","Historic garden with monuments and walking paths.","A popular green space containing tombs from the Lodhi period.","Lodhi Garden Delhi"],
+["Chandni Chowk","Shopping","Old Delhi",90,"🛍️","market","Historic market known for food, textiles and shopping.","One of Old Delhi's best-known commercial streets.","Chandni Chowk Delhi"]
+],
+jaipur:[
+["Hawa Mahal","Heritage","Pink City",45,"🏛️","history","Iconic palace facade in Jaipur.","Hawa Mahal was built in 1799 by Maharaja Sawai Pratap Singh.","Hawa Mahal Jaipur"],
+["Amber Fort","Heritage","Amer",90,"🏰","history","Hilltop fort known for Rajput architecture.","Amber Fort is a major historical attraction near Jaipur.","Amber Fort Jaipur"],
+["City Palace","Heritage","Pink City",75,"👑","history","Royal palace complex in the heart of Jaipur.","The City Palace reflects Jaipur's royal history.","City Palace Jaipur"],
+["Jantar Mantar","Heritage","Pink City",60,"🔭","history","Historic astronomical observation site.","The Jaipur observatory is a UNESCO World Heritage site.","Jantar Mantar Jaipur"],
+["Jal Mahal","Heritage","Man Sagar Lake",30,"🌊","history","Palace situated in Man Sagar Lake.","A prominent architectural landmark in Jaipur.","Jal Mahal Jaipur"],
+["Albert Hall Museum","Heritage","Ram Niwas Garden",60,"🖼️","history","Museum displaying art and historical collections.","An important museum housed in an Indo-Saracenic building.","Albert Hall Museum Jaipur"],
+["Johari Bazaar","Shopping","Pink City",60,"💎","market","Traditional market known for jewellery.","A well-known shopping area in Jaipur.","Johari Bazaar Jaipur"]
+],
+amritsar:[
+["Golden Temple","Spiritual","Old City",75,"🙏","temple","The most prominent Sikh shrine.","Harmandir Sahib is a major centre of Sikh worship.","Golden Temple Amritsar"],
+["Jallianwala Bagh","Heritage","Near Golden Temple",45,"🏛️","history","Memorial garden commemorating the 1919 massacre.","A significant site in India's freedom struggle.","Jallianwala Bagh Amritsar"],
+["Partition Museum","Heritage","Town Hall",60,"🏛️","history","Museum documenting the Partition of India.","The museum preserves personal accounts and objects related to Partition.","Partition Museum Amritsar"],
+["Gobindgarh Fort","Heritage","Amritsar",60,"🏰","history","Historic fort with cultural exhibits.","A historic fort associated with Maharaja Ranjit Singh.","Gobindgarh Fort Amritsar"],
+["Hall Bazaar","Shopping","Old City",60,"🛍️","market","Traditional shopping street.","A popular market for local goods and souvenirs.","Hall Bazaar Amritsar"]
+],
+mumbai:[
+["Gateway of India","Heritage","Colaba",45,"🏛️","history","Iconic waterfront monument.","Built to commemorate the visit of King George V and Queen Mary.","Gateway of India Mumbai"],
+["Marine Drive","Nature","South Mumbai",45,"🌊","nature","Famous coastal promenade.","A landmark waterfront road known for its sweeping curve.","Marine Drive Mumbai"],
+["Chhatrapati Shivaji Maharaj Terminus","Heritage","Fort",45,"🚉","history","Historic railway terminus and UNESCO site.","A major example of Victorian Gothic Revival architecture.","CSMT Mumbai"],
+["Siddhivinayak Temple","Spiritual","Prabhadevi",45,"🙏","temple","Well-known Hindu temple dedicated to Ganesha.","A prominent place of worship in Mumbai.","Siddhivinayak Temple Mumbai"],
+["Juhu Beach","Nature","Juhu",60,"🏖️","nature","Popular urban beach.","A well-known public beach in Mumbai.","Juhu Beach Mumbai"],
+["Colaba Causeway","Shopping","Colaba",60,"🛍️","market","Popular shopping street.","Known for shops, street markets and cafes.","Colaba Causeway Mumbai"]
+],
+varanasi:[
+["Kashi Vishwanath Temple","Spiritual","Old City",60,"🙏","temple","Major Hindu temple dedicated to Lord Shiva.","One of the most prominent temples in Varanasi.","Kashi Vishwanath Temple"],
+["Dashashwamedh Ghat","Spiritual","Ganga River",45,"🪔","temple","Famous riverfront ghat.","Known for its evening Ganga Aarti.","Dashashwamedh Ghat"],
+["Assi Ghat","Nature","Assi",45,"🌊","nature","Popular riverside destination.","A well-known ghat at the confluence of the Ganga and Assi rivers.","Assi Ghat Varanasi"],
+["Sarnath","Heritage","Sarnath",90,"🏛️","history","Important Buddhist pilgrimage site.","Buddha is traditionally associated with his first sermon at Sarnath.","Sarnath Varanasi"],
+["Ramnagar Fort","Heritage","Ramnagar",60,"🏰","history","Historic fort on the Ganga.","A historic fort associated with the former rulers of Varanasi.","Ramnagar Fort Varanasi"]
+]
+};
+
+let currentCity="Ambala",places=[],route=[],activeCategory="All",currentStory=null;
+const cityAliases={"new delhi":"delhi","bombay":"mumbai","banaras":"varanasi","kashi":"varanasi","panchkula":"chandigarh"};
+
+function slug(s){return s.toLowerCase().replace(/[^a-z0-9]/g,"_")}
+function key(){return "localTrails_"+slug(currentCity)}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+function convert(rows,city){
+return rows.map((r,i)=>({id:slug(city)+"_"+i,name:r[0],cat:r[1],area:r[2],mins:r[3],emoji:r[4],style:r[5],desc:r[6],history:r[7],map:r[8],hidden:i>=rows.length-2,source:"Curated demo information",fact:"Confirm opening hours, visitor access and entry rules before travelling."}));
+}
+
+function restoreRoute(){
+try{route=JSON.parse(localStorage.getItem(key())||"[]");if(!Array.isArray(route))route=[]}
+catch(e){route=[]}
+}
+
+function showToast(msg){
+const t=document.getElementById("toast");t.textContent=msg;t.style.display="block";
+clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.style.display="none",2500);
+}
+
+async function changeLocation(){
+const input=document.getElementById("cityInput").value.trim();
+if(!input){showToast("Enter a city name.");return}
+const button=document.getElementById("searchCityBtn");
+button.disabled=true;button.textContent="Loading...";
+document.getElementById("status").textContent="Searching for "+input+"...";
+try{
+const clean=input.toLowerCase();
+const city=cityAliases[clean]||clean;
+if(database[city]){
+currentCity=city.charAt(0).toUpperCase()+city.slice(1);
+places=convert(database[city],city);
+}else{
+const response=await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q="+encodeURIComponent(input));
+if(!response.ok)throw new Error("Location service unavailable.");
+const data=await response.json();
+if(!data.length)throw new Error("Location not found. Try another city.");
+const loc=data[0],lat=Number(loc.lat),lon=Number(loc.lon);
+currentCity=loc.name||input;
+document.getElementById("status").textContent="Loading mapped attractions around "+currentCity+"...";
+places=await discoverPlaces(lat,lon);
+}
+activeCategory="All";
+document.querySelectorAll(".chip").forEach(b=>b.classList.toggle("active",b.dataset.cat==="All"));
+document.getElementById("search").value="";
+restoreRoute();renderAll();
+document.getElementById("status").textContent="Exploring "+currentCity+" — "+places.length+" destinations loaded.";
+showToast("Location loaded!");
+}catch(e){
+document.getElementById("status").textContent=e.message;
+showToast(e.message);
+}finally{button.disabled=false;button.textContent="Explore location →"}
+}
+
+async function discoverPlaces(lat,lon){
+const query=`[out:json][timeout:20];(node(around:12000,${lat},${lon})[tourism~"^(attraction|museum|gallery|viewpoint|zoo)$"];way(around:12000,${lat},${lon})[tourism~"^(attraction|museum|gallery|viewpoint|zoo)$"];node(around:12000,${lat},${lon})[historic];way(around:12000,${lat},${lon})[historic];node(around:12000,${lat},${lon})[leisure=park];way(around:12000,${lat},${lon})[leisure=park];node(around:12000,${lat},${lon})[amenity=place_of_worship];way(around:12000,${lat},${lon})[amenity=place_of_worship];);out center tags;`;
+const endpoints=["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter","https://overpass.private.coffee/api/interpreter"];
+let data=null;
+for(const endpoint of endpoints){
+try{
+const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
+const response=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(query),signal:controller.signal});
+clearTimeout(timer);
+if(response.ok){data=await response.json();if(data.elements)break}
+}catch(e){}
+}
+if(!data||!data.elements)throw new Error("Public map servers are busy. Try again, or use a built-in demo city such as Chandigarh.");
+const seen=new Set();
+return data.elements.map(el=>{
+const t=el.tags||{},name=t.name||t["name:en"];
+if(!name||seen.has(name.toLowerCase()))return null;
+seen.add(name.toLowerCase());
+let cat="Heritage",emoji="🏛️",style="history";
+if(t.amenity==="place_of_worship"){cat="Spiritual";emoji="🙏";style="temple"}
+else if(t.leisure==="park"){cat="Nature";emoji="🌳";style="nature"}
+const lat=el.lat??el.center?.lat,lon=el.lon??el.center?.lon;
+return{id:"osm_"+el.type+"_"+el.id,name,cat,area:t["addr:suburb"]||currentCity,mins:30,emoji,style,hidden:false,desc:"A mapped local destination listed in OpenStreetMap.",history:"This destination is listed in OpenStreetMap. Further historical details should be confirmed with local sources.",fact:"Confirm opening hours and visitor access before travelling.",map:lat!=null?lat+","+lon:name+", "+currentCity,source:"OpenStreetMap"};
+}).filter(Boolean).slice(0,70);
+}
+
+document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
+document.querySelectorAll(".chip").forEach(x=>x.classList.remove("active"));
+b.classList.add("active");activeCategory=b.dataset.cat;renderPlaces();
+}));
+
+function renderPlaces(){
+const q=document.getElementById("search").value.toLowerCase();
+const duration=Number(document.getElementById("duration").value);
+const list=places.filter(p=>(activeCategory==="All"||p.cat===activeCategory)&&(!duration||p.mins<=duration)&&(p.name+" "+p.area+" "+p.desc+" "+p.cat).toLowerCase().includes(q));
+document.getElementById("places").innerHTML=list.length?list.map(p=>`
+<article class="panel place">
+<div class="place-top ${p.style}"><span class="place-emoji">${p.emoji}</span><span class="tag">${escapeHTML(p.cat)}</span></div>
+<div class="place-body"><h3>${escapeHTML(p.name)}</h3><p>${escapeHTML(p.desc)}</p>
+<div class="meta">◷ ${p.mins} min suggested<br>⌖ ${escapeHTML(p.area)}</div>
+<div class="actions">
+<button class="small" onclick="togglePlace('${p.id}')">${route.includes(p.id)?"✓ Added":"＋ Add"}</button>
+<button class="small" onclick="openStory('${p.id}')">Story</button>
+<button class="small" onclick="openMap('${p.map}')">Map ↗</button>
+</div></div></article>`).join(""):'<div class="panel empty">No destinations found. Try another search or category.</div>';
+}
+
+function renderGems(){
+const gems=places.filter(p=>p.hidden);
+document.getElementById("gemPlaces").innerHTML=gems.length?gems.map(p=>`
+<article class="panel place"><div class="place-top ${p.style}"><span class="place-emoji">${p.emoji}</span><span class="tag">LOCAL DISCOVERY</span></div>
+<div class="place-body"><h3>${escapeHTML(p.name)}</h3><p>${escapeHTML(p.desc)}</p><div class="meta">${escapeHTML(p.area)}</div>
+<div class="actions"><button class="small" onclick="openStory('${p.id}')">Read story</button><button class="small" onclick="openMap('${p.map}')">Explore ↗</button></div></div></article>`).join(""):'<div class="empty">No additional discovery suggestions are currently listed for this location.</div>';
+}
+
+function persist(){localStorage.setItem(key(),JSON.stringify(route));renderAll()}
+function togglePlace(id){
+route=route.includes(id)?route.filter(x=>x!==id):[...route,id];
+persist();showToast(route.includes(id)?"Added to journey.":"Removed from journey.");
+}
+function movePlace(id,dir){
+const i=route.indexOf(id),j=i+dir;if(i<0||j<0||j>=route.length)return;
+[route[i],route[j]]=[route[j],route[i]];persist();
+}
+function clearRoute(){
+if(!route.length)return showToast("Your journey is already empty.");
+if(confirm("Clear your journey?")){route=[];persist();showToast("Journey cleared.")}
+}
+function renderRoute(){
+const selected=route.map(id=>places.find(p=>p.id===id)).filter(Boolean);
+document.getElementById("count").textContent=selected.length+" stops";
+if(!selected.length){
+document.getElementById("itinerary").innerHTML='<div class="empty">Your journey starts here. Add destinations to build your itinerary.</div>';
+document.getElementById("summary").style.display="none";return;
+}
+document.getElementById("itinerary").innerHTML='<ol class="itinerary-list">'+selected.map((p,i)=>`
+<li><b>${i+1}. ${escapeHTML(p.name)}</b>
+<span style="float:right"><button onclick="movePlace('${p.id}',-1)">↑</button><button onclick="movePlace('${p.id}',1)">↓</button></span>
+<br><small>${p.mins} minutes suggested</small><br><button class="remove" onclick="togglePlace('${p.id}')">Remove</button></li>`).join("")+'</ol>';
+const total=selected.reduce((s,p)=>s+p.mins,0),sum=document.getElementById("summary");
+sum.style.display="block";sum.innerHTML=`<b>${Math.floor(total/60)}h ${total%60}m</b><br>Estimated destination visit time.<br>${selected.length} destinations selected.<br>Travel time is not included.`;
+}
+
+function openMap(place){window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(place),"_blank")}
+function openRoute(){
+const selected=route.map(id=>places.find(p=>p.id===id)).filter(Boolean);
+if(!selected.length)return showToast("Add destinations first.");
+const destination=selected[selected.length-1].map;
+const waypoints=selected.slice(0,-1).map(p=>p.map).join("|");
+let url="https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(destination)+"&travelmode=driving";
+if(waypoints)url+="&waypoints="+encodeURIComponent(waypoints);
+window.open(url,"_blank");
+}
+
+function generatePlan(){
+const available=Number(document.getElementById("hours").value)*60;
+const interest=document.getElementById("interest").value,pace=document.getElementById("pace").value;
+let candidates=places.filter(p=>interest==="All"||p.cat===interest);
+if(pace==="relaxed")candidates=candidates.slice(0,Math.max(2,Math.ceil(candidates.length*.6)));
+let selected=[],total=0;
+for(const p of candidates)if(total+p.mins<=available){selected.push(p);total+=p.mins}
+if(!selected.length)return showToast("No suitable destinations for these settings.");
+route=selected.map(p=>p.id);persist();
+const result=document.getElementById("planResult");result.style.display="block";
+result.innerHTML=`<b>Your ${escapeHTML(currentCity)} itinerary</b><br><br>${selected.map((p,i)=>`${i+1}. ${escapeHTML(p.name)} — ${p.mins} minutes`).join("<br>")}<br><br><b>Destination visit time:</b> ${total} minutes<br><b>Suggested travel buffer:</b> ${selected.length*15} minutes<br><br>Your destinations have been added to My Journey.`;
+}
+
+function askPreset(q){document.getElementById("question").value=q;askAssistant()}
+function askAssistant(){
+const q=document.getElementById("question").value.toLowerCase().trim(),result=document.getElementById("assistantResult");
+if(!q)return showToast("Enter your question.");
+let list=[...places],heading="Recommended destinations";
+if(q.includes("spiritual")||q.includes("temple")){list=places.filter(p=>p.cat==="Spiritual");heading="Spiritual destinations"}
+else if(q.includes("histor")||q.includes("heritage")){list=places.filter(p=>p.cat==="Heritage");heading="Heritage destinations"}
+else if(q.includes("nature")||q.includes("park")){list=places.filter(p=>p.cat==="Nature");heading="Nature experiences"}
+else if(q.includes("shop")||q.includes("market")){list=places.filter(p=>p.cat==="Shopping");heading="Shopping destinations"}
+else if(q.includes("hidden")||q.includes("gem")){list=places.filter(p=>p.hidden);heading="Local discovery suggestions"}
+const match=q.match(/(\d+)\s*hours?/);
+if(match){let time=Number(match[1])*60;list=list.filter(p=>{if(p.mins<=time){time-=p.mins;return true}return false})}
+result.style.display="block";
+result.innerHTML=list.length?`<b>${heading} in ${escapeHTML(currentCity)}</b><br><br>`+list.map((p,i)=>`<div style="padding:10px 0;border-bottom:1px solid #ffffff30"><b>${i+1}. ${escapeHTML(p.name)}</b><br>${escapeHTML(p.desc)}<br><button class="small" onclick="togglePlace('${p.id}')">Add to journey</button> <button class="small" onclick="openMap('${p.map}')">Directions</button></div>`).join(""):"No matching destinations found. Try another category or city.";
+}
+
+function openStory(id){
+const p=places.find(x=>x.id===id);if(!p)return;currentStory=p;
+document.getElementById("storyTitle").textContent=p.name;
+document.getElementById("storyDescription").textContent=p.history;
+document.getElementById("storyFacts").innerHTML=`<b>Destination details</b><br>${escapeHTML(p.desc)}<br><br><b>Visitor tip</b><br>${escapeHTML(p.fact)}<br><br><b>Location:</b> ${escapeHTML(p.area)}<br><b>Category:</b> ${escapeHTML(p.cat)}<br><b>Suggested duration:</b> ${p.mins} minutes<br><b>Information source:</b> ${escapeHTML(p.source)}`;
+document.getElementById("storyModal").style.display="flex";
+}
+function closeStory(){document.getElementById("storyModal").style.display="none"}
+function addStoryPlace(){if(currentStory)togglePlace(currentStory.id)}
+function storyDirections(){if(currentStory)openMap(currentStory.map)}
+
+async function shareJourney(){
+if(!route.length)return showToast("Add destinations before sharing.");
+const url=new URL(location.href);url.searchParams.set("city",currentCity);url.searchParams.set("trip",route.join(","));
+try{
+if(navigator.share)await navigator.share({title:"My Local Trails Journey",text:"Explore my travel itinerary!",url:url.toString()});
+else{await navigator.clipboard.writeText(url.toString());showToast("Journey link copied.")}
+}catch(e){prompt("Copy your journey link:",url.toString())}
+}
+
+function renderAll(){renderPlaces();renderGems();renderRoute()}
+function goTo(id){document.getElementById(id).scrollIntoView({behavior:"smooth"})}
+
+async function restoreSharedJourney(){
+const params=new URLSearchParams(location.search),city=params.get("city"),trip=params.get("trip");
+if(!city||!trip)return;
+document.getElementById("cityInput").value=city;
+const clean=city.toLowerCase(),alias=cityAliases[clean]||clean;
+if(database[alias]){currentCity=alias.charAt(0).toUpperCase()+alias.slice(1);places=convert(database[alias],alias)}
+else return;
+route=trip.split(",").filter(id=>places.some(p=>p.id===id));
+localStorage.setItem(key(),JSON.stringify(route));renderAll();
+}
+
+currentCity="Ambala";
+places=convert(database.ambala,"ambala");
+restoreRoute();
+renderAll();
+restoreSharedJourney();
+</script>
+</body>
+</html>
